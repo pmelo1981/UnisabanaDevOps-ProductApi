@@ -268,7 +268,7 @@ image:
 ## Secretos Necesarios (GitHub)
 
 Para que el CI/CD funcione, agrega estos **Repository Secrets** en:  
-https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-productapi/settings/secrets/actions
+https://github.com/pmelo1981/UnisabanaDevOps-ProductApi/settings/secrets/actions
 
 | Secret | Ejemplo |
 |--------|---------|
@@ -279,7 +279,7 @@ https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-productapi/se
 
 ## Documentacion
 
-- **Infrastructure Repo (GitOps, ArgoCD, K8s)**: https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
+- **Infrastructure Repo (GitOps, ArgoCD, K8s)**: https://github.com/pmelo1981/UnisabanaDevOps-Infrastructure)
 - **ArgoCD UI**: https://172.169.162.125 (usuario: admin, ver Infrastructure README)
 - [ArgoCD Docs](https://argo-cd.readthedocs.io/)
 - [Helm Docs](https://helm.sh/docs/)
@@ -301,5 +301,5 @@ Esto borra: AKS, ACR, Load Balancer, Storage, todo.
 ---
 
   
-**Ultima actualizacion:** 08/03/2026
+**Ultima actualizacion:** 08/Junio/2026
 
