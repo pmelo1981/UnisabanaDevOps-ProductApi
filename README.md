@@ -1,19 +1,14 @@
-# Product API - Microservicio REST
-
-## UnisabanaArq1Grupo2 PatronesActividad3
 Presentación de la Actividad
 
-Asignatura: Arquitectura de Software
+Asignatura: Fundamentos de DevOps
 
-Profesor: Daniel Orlando Saavedra Fonnegra
+Profesora: María Fernanda Ochoa Paipilla
 
 Integrantes del grupo:
 - Pablo Andrés Melo García
 - Camilo Andres Padilla Garcia
-- Edison Kenneth Campos Avila
-- Cristian Alonso Cardona Vega
+- Jorge Ivan Figueroa
 - Jorge Andres Ayala Valero
-- John Harold Diaz Gonzale
 
 API REST para gestión de productos con despliegue automatizado en Kubernetes/AKS, Helm, ArgoCD y CI/CD.
 
