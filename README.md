@@ -26,6 +26,8 @@ API REST para gestión de productos con despliegue automatizado en Kubernetes/AK
 - **ArgoCD** - GitOps automático
 - **GitHub Actions** - CI/CD (Build → Test → Docker Push → Auto-deploy)
 - **Azure Container Registry** - Registry privado de imágenes
+- **SonarQube Community** - Análisis de calidad y coverage
+- **Datadog** - Observabilidad y monitoreo de AKS
 
 ---
 
@@ -52,6 +54,8 @@ Microservicio simple en ASP.NET Core 10 que expone una API REST para gestionar p
 - Dockerfile multistage (~150MB)
 - Helm Charts con values.yaml + values-acr.yaml
 - GitHub Actions CI/CD (ACR push automático)
+- SonarQube integrado en CI/CD
+- Monitoreo centralizado con Datadog
 - Despliega automáticamente en AKS vía ArgoCD
 
 ---
@@ -193,17 +197,20 @@ El pipeline se dispara automáticamente al hacer `git push` en `main`:
 3. dotnet restore (NuGet)
 4. dotnet build -c Release
 5. dotnet test (15 tests)
-6. Login a Azure Container Registry
-7. docker build -f docker/Dockerfile
-8. docker push → ACR (tag: git SHA + latest)
-9. sed actualiza values-acr.yaml con nuevo tag
-10. git push automatico
+6. SonarQube analysis + Quality Scan
+7. Login a Azure Container Registry
+8. docker build -f docker/Dockerfile
+9. docker push → ACR (tag: git SHA + latest)
+10. sed actualiza values-acr.yaml con nuevo tag
+11. git push automatico
     ↓
     ArgoCD detecta (cada 3 min)
     ↓
     helm upgrade en Kubernetes
     ↓
     Rolling update (zero-downtime)
+    ↓
+    Datadog monitorea cluster, pods y aplicación
 ```
 
 **No se necesita Docker Desktop.** Todo se construye en runners de GitHub en la nube.
@@ -219,6 +226,8 @@ git push
     ↓
 GitHub Actions: Build → Test → Docker Push a ACR
     ↓
+SonarQube analiza calidad y coverage
+    ↓
 Actualiza helm/values-acr.yaml con nueva imagen
     ↓
     ArgoCD detecta el cambio (~3 minutos)
@@ -226,6 +235,8 @@ Actualiza helm/values-acr.yaml con nueva imagen
     kubectl apply de Helm charts
     ↓
     Deployment actualizado automaticamente en AKS
+    ↓
+    Datadog recolecta métricas, logs y traces
     ↓
     Disponible en: http://productapi-mpn.centralus.cloudapp.azure.com/api/...
 
@@ -274,6 +285,54 @@ https://github.com/pmelo1981/UnisabanaDevOps-ProductApi/settings/secrets/actions
 |--------|---------|
 | `ACR_USERNAME` | `productapiregistry163505` |
 | `ACR_PASSWORD` | `(access key del ACR)` |
+| `SONAR_TOKEN` | `(token SonarQube)` |
+| `SONAR_HOST_URL` | `http://57.162.160.232:9000` |
+
+---
+
+## Observabilidad y Monitoreo
+
+El cluster AKS está integrado con Datadog mediante ArgoCD + GitOps.
+
+Servicios monitoreados:
+
+- Kubernetes cluster (AKS)
+- Nodes y pods
+- Contenedores Docker
+- Logs centralizados
+- Métricas CPU/Memoria
+- APM y traces
+- Kubernetes events
+
+Cluster configurado en Datadog:
+
+```plaintext
+aks-productapi
+```
+
+Datadog fue desplegado usando:
+
+- Datadog Operator
+- Datadog Agent
+- ArgoCD Applications
+
+---
+
+## Calidad de Código (SonarQube)
+
+El pipeline CI/CD ejecuta análisis automático de SonarQube Community:
+
+- Bugs
+- Vulnerabilities
+- Code Smells
+- Coverage
+- Quality Gates
+
+Servidor SonarQube:
+
+```plaintext
+http://57.162.160.232:9000
+```
 
 ---
 
