@@ -14,7 +14,7 @@ API REST para gestión de productos con despliegue automatizado en Kubernetes/AK
 
 **Acceso en vivo:** http://productapi-mpn.centralus.cloudapp.azure.com/api/products
 .
----
+----
 
 ## Tecnologías
 
