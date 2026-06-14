@@ -1,0 +1,41 @@
+# helm/monitoring-values.yaml
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelector:
+      matchLabels:
+        release: prometheus
+
+grafana:
+  adminPassword: "admin"
+  persistence:
+    enabled: true
+    storageClassName: default
+    size: 10Gi
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - grafana.productapi-mpn.centralus.cloudapp.azure.com
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+    dashboards:
+      default:
+        dotnet-core:
+          gnetId: 10427
+          revision: 1
+          datasource: Prometheus
