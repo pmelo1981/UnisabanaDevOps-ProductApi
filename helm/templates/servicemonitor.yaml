@@ -7,6 +7,9 @@ metadata:
     app: productapi
     release: {{ .Values.serviceMonitor.release }}
 spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
   selector:
     matchLabels:
       app: productapi

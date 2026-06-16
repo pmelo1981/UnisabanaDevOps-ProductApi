@@ -1,8 +1,17 @@
 # helm/monitoring-values.yaml
+# Values for kube-prometheus-stack when deploying the monitoring infrastructure.
+# Usage: helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring --create-namespace -f helm/monitoring-values.yaml
 prometheus:
   prometheusSpec:
+    # Allow Prometheus to discover ServiceMonitors and PrometheusRules from ALL namespaces,
+    # not just the monitoring namespace. Critical for cross-namespace monitoring (app in default, Prometheus in monitoring).
     serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorNamespaceSelector: {}
     serviceMonitorSelector:
+      matchLabels:
+        release: prometheus
+    ruleNamespaceSelector: {}
+    ruleSelector:
       matchLabels:
         release: prometheus
 
@@ -21,21 +30,9 @@ grafana:
     dashboards:
       enabled: true
       label: grafana_dashboard
-    dashboardProviders:
-      dashboardproviders.yaml:
-        apiVersion: 1
-        providers:
-        - name: 'default'
-          orgId: 1
-          folder: ''
-          type: file
-          disableDeletion: false
-          editable: true
-          options:
-            path: /var/lib/grafana/dashboards/default
-    dashboards:
-      default:
-        dotnet-core:
-          gnetId: 10427
-          revision: 1
-          datasource: Prometheus
+      # Search ALL namespaces for dashboard ConfigMaps, not just the monitoring namespace.
+      # This is required because the ProductAPI dashboard ConfigMap is deployed alongside the app.
+      searchNamespace: ALL
+    datasources:
+      enabled: true
+      label: grafana_datasource

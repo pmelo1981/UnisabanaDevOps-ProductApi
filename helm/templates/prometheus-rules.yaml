@@ -1,39 +1,46 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: productapi-alerts
+  name: {{ .Release.Name }}-productapi-alerts
   labels:
-    release: prometheus # Must match the prometheus release name
+    app: productapi
+    release: {{ .Values.serviceMonitor.release }}
 spec:
   groups:
   - name: productapi.rules
     rules:
     - alert: ProductApiDown
-      expr: up{app="productapi"} == 0
+      expr: up{job="{{ .Release.Name }}-productapi"} == 0
       for: 1m
       labels:
         severity: critical
       annotations:
         summary: "ProductAPI microservice is DOWN"
-        description: "No running replica found for app=productapi. The endpoint is unreachable."
+        description: "No running replica found for ProductAPI. The endpoint is unreachable."
 
     - alert: ProductApiHighErrorRate
-      expr: sum(rate(http_requests_received_total{app="productapi", code=~"5.."}[2m])) / sum(rate(http_requests_received_total{app="productapi"}[2m])) * 100 > 5
+      expr: >-
+        sum(rate(microsoft_aspnetcore_hosting_http_server_request_duration_count{job="{{ .Release.Name }}-productapi", http_response_status_code=~"5.."}[2m]))
+        / sum(rate(microsoft_aspnetcore_hosting_http_server_request_duration_count{job="{{ .Release.Name }}-productapi"}[2m]))
+        * 100 > 5
       for: 2m
       labels:
         severity: critical
       annotations:
         summary: "ProductAPI High Error Rate (> 5%)"
-        description: "5xx HTTP responses represent {{ $value }}% of total API calls for the last 2 minutes."
+        description: "5xx HTTP responses represent {{ "{{" }} $value {{ "}}" }}% of total API calls for the last 2 minutes."
 
     - alert: ProductApiSlowResponse
-      expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{app="productapi"}[3m])) by (le)) > 1.0
+      expr: >-
+        histogram_quantile(0.95,
+          sum(rate(microsoft_aspnetcore_hosting_http_server_request_duration_bucket{job="{{ .Release.Name }}-productapi"}[3m])) by (le)
+        ) > 1.0
       for: 3m
       labels:
         severity: warning
       annotations:
         summary: "ProductAPI Slow Responses"
-        description: "95% of requests are taking more than 1 second (Current: {{ $value }}s)."
+        description: "95% of requests are taking more than 1 second (Current: {{ "{{" }} $value {{ "}}" }}s)."
 
     - alert: ProductApiHighMemory
       expr: container_memory_working_set_bytes{container="productapi"} > 419430400
@@ -42,4 +49,4 @@ spec:
         severity: warning
       annotations:
         summary: "ProductAPI High Memory Usage"
-        description: "The container is using {{ $value | humanize1024 }} of memory (Limit is 512Mi)."
+        description: "The container is using {{ "{{" }} $value | humanize1024 {{ "}}" }} of memory (Limit is 512Mi)."
