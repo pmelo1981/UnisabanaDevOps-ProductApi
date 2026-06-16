@@ -27,7 +27,7 @@ API REST para gestión de productos con despliegue automatizado en Kubernetes/AK
 - **GitHub Actions** - CI/CD (Build → Test → Docker Push → Auto-deploy)
 - **Azure Container Registry** - Registry privado de imágenes
 - **SonarQube Community** - Análisis de calidad y coverage
-- **Datadog** - Observabilidad y monitoreo de AKS
+- **Prometheus & Grafana** - Observabilidad y monitoreo de AKS
 
 ---
 
@@ -55,7 +55,7 @@ Microservicio simple en ASP.NET Core 10 que expone una API REST para gestionar p
 - Helm Charts con values.yaml + values-acr.yaml
 - GitHub Actions CI/CD (ACR push automático)
 - SonarQube integrado en CI/CD
-- Monitoreo centralizado con Datadog
+- Monitoreo centralizado con Prometheus y Grafana (Kube-Prometheus-Stack)
 - Despliega automáticamente en AKS vía ArgoCD
 
 ---
@@ -210,7 +210,7 @@ El pipeline se dispara automáticamente al hacer `git push` en `main`:
     ↓
     Rolling update (zero-downtime)
     ↓
-    Datadog monitorea cluster, pods y aplicación
+    Prometheus monitorea cluster, pods y aplicación
 ```
 
 **No se necesita Docker Desktop.** Todo se construye en runners de GitHub en la nube.
@@ -236,7 +236,7 @@ Actualiza helm/values-acr.yaml con nueva imagen
     ↓
     Deployment actualizado automaticamente en AKS
     ↓
-    Datadog recolecta métricas, logs y traces
+    Prometheus recolecta métricas (Prometheus-net)
     ↓
     Disponible en: http://productapi-mpn.centralus.cloudapp.azure.com/api/...
 
@@ -292,29 +292,21 @@ https://github.com/pmelo1981/UnisabanaDevOps-ProductApi/settings/secrets/actions
 
 ## Observabilidad y Monitoreo
 
-El cluster AKS está integrado con Datadog mediante ArgoCD + GitOps.
+El cluster AKS está integrado con Prometheus y Grafana mediante Kube-Prometheus-Stack.
 
 Servicios monitoreados:
 
-- Kubernetes cluster (AKS)
-- Nodes y pods
-- Contenedores Docker
-- Logs centralizados
-- Métricas CPU/Memoria
-- APM y traces
-- Kubernetes events
+- Kubernetes cluster (AKS) a través de kube-state-metrics
+- Nodes (Node Exporter) y pods
+- Métricas HTTP y personalizadas de la aplicación (prometheus-net)
+- Dashboard centralizado en Grafana
 
-Cluster configurado en Datadog:
+Despliegue y Configuración:
 
-```plaintext
-aks-productapi
-```
-
-Datadog fue desplegado usando:
-
-- Datadog Operator
-- Datadog Agent
-- ArgoCD Applications
+- Stack de monitoreo desplegado vía Helm Chart (`kube-prometheus-stack`)
+- ServiceMonitor configurado para descubrir los endpoints `/metrics` de la aplicación.
+- Grafana provisionado con dashboards automáticos de `.NET` y `ProductAPI`.
+- Reglas de alertas configuradas en PrometheusRule (ej. Error Rate > 5%, Memoria Alta, etc.).
 
 ---
 
