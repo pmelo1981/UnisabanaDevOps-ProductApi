@@ -49,6 +49,25 @@ jobs:
     - name: Unit Tests
       run: dotnet test src/ProductAPI.Tests/ProductAPI.Tests.csproj -c Release --no-build --verbosity normal
 
+    - name: Run Snyk Open Source Scan
+      uses: snyk/actions/dotnet@master
+      continue-on-error: true
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        command: test
+        args: --severity-threshold=high
+
+    - name: Run Snyk Container Scan
+      if: github.event_name == 'push'
+      uses: snyk/actions/docker@master
+      continue-on-error: true
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        image: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
+        args: --severity-threshold=high
+
     - name: End SonarQube Analysis
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
