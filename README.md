@@ -198,11 +198,13 @@ El pipeline se dispara automáticamente al hacer `git push` en `main`:
 4. dotnet build -c Release
 5. dotnet test (15 tests)
 6. SonarQube analysis + Quality Scan
-7. Login a Azure Container Registry
-8. docker build -f docker/Dockerfile
-9. docker push → ACR (tag: git SHA + latest)
-10. sed actualiza values-acr.yaml con nuevo tag
-11. git push automatico
+7. Snyk Open Source Scan
+8. Snyk Container Scan
+9. Login a Azure Container Registry
+10. docker build -f docker/Dockerfile
+11. docker push → ACR (tag: git SHA + latest)
+12. sed actualiza values-acr.yaml con nuevo tag
+13. git push automatico
     ↓
     ArgoCD detecta (cada 3 min)
     ↓
@@ -227,6 +229,8 @@ git push
 GitHub Actions: Build → Test → Docker Push a ACR
     ↓
 SonarQube analiza calidad y coverage
+    ↓
+Snyk analiza vulnerabilidades y contenedores
     ↓
 Actualiza helm/values-acr.yaml con nueva imagen
     ↓
@@ -287,6 +291,7 @@ https://github.com/pmelo1981/UnisabanaDevOps-ProductApi/settings/secrets/actions
 | `ACR_PASSWORD` | `(access key del ACR)` |
 | `SONAR_TOKEN` | `(token SonarQube)` |
 | `SONAR_HOST_URL` | `http://57.162.160.232:9000` |
+| `SNYK_TOKEN` | `(token API Snyk)` |
 
 ---
 
@@ -325,6 +330,22 @@ Servidor SonarQube:
 ```plaintext
 http://57.162.160.232:9000
 ```
+
+---
+
+## DevSecOps (Snyk)
+
+El pipeline CI/CD integra Snyk para análisis de seguridad:
+
+- Vulnerabilidades NuGet
+- Escaneo de imágenes Docker
+- Detección de librerías vulnerables
+- Seguridad en contenedores
+
+Escaneos ejecutados:
+
+- Snyk Open Source
+- Snyk Container
 
 ---
 
