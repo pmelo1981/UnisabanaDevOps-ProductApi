@@ -27,7 +27,9 @@ API REST para gestión de productos con despliegue automatizado en Kubernetes/AK
 - **GitHub Actions** - CI/CD (Build → Test → Docker Push → Auto-deploy)
 - **Azure Container Registry** - Registry privado de imágenes
 - **SonarQube Community** - Análisis de calidad y coverage
-- **Prometheus & Grafana** - Observabilidad y monitoreo de AKS
+- **Datadog** - Observabilidad cloud y monitoreo AKS
+- **Prometheus & Grafana** - Métricas, dashboards y alertas
+- **Snyk** - Escaneo de vulnerabilidades y DevSecOps
 
 ---
 
@@ -55,7 +57,9 @@ Microservicio simple en ASP.NET Core 10 que expone una API REST para gestionar p
 - Helm Charts con values.yaml + values-acr.yaml
 - GitHub Actions CI/CD (ACR push automático)
 - SonarQube integrado en CI/CD
-- Monitoreo centralizado con Prometheus y Grafana (Kube-Prometheus-Stack)
+- Observabilidad centralizada con Datadog
+- Métricas y dashboards con Prometheus + Grafana
+- Escaneo de seguridad con Snyk
 - Despliega automáticamente en AKS vía ArgoCD
 
 ---
@@ -212,7 +216,11 @@ El pipeline se dispara automáticamente al hacer `git push` en `main`:
     ↓
     Rolling update (zero-downtime)
     ↓
-    Prometheus monitorea cluster, pods y aplicación
+    Datadog monitorea logs, métricas y traces
+    ↓
+    Prometheus recolecta métricas
+    ↓
+    Grafana visualiza dashboards y alertas
 ```
 
 **No se necesita Docker Desktop.** Todo se construye en runners de GitHub en la nube.
@@ -240,12 +248,16 @@ Actualiza helm/values-acr.yaml con nueva imagen
     ↓
     Deployment actualizado automaticamente en AKS
     ↓
+    Datadog recolecta métricas, logs y APM
+    ↓
     Prometheus recolecta métricas (Prometheus-net)
+    ↓
+    Grafana muestra dashboards operacionales
     ↓
     Disponible en: http://productapi-mpn.centralus.cloudapp.azure.com/api/...
 
 Infraestructura (ArgoCD, Helm, K8s config):  
-https://github.com/pmelo1981/UnisabanaArq1Grupo2PatronesActividad3-infrastructure
+https://github.com/pmelo1981/UnisabanaDevOps-Infrastructure
 ```
 
 ---
@@ -297,7 +309,13 @@ https://github.com/pmelo1981/UnisabanaDevOps-ProductApi/settings/secrets/actions
 
 ## Observabilidad y Monitoreo
 
-El cluster AKS está integrado con Prometheus y Grafana mediante Kube-Prometheus-Stack.
+El cluster AKS está integrado con:
+
+- Datadog
+- Prometheus
+- Grafana
+
+para observabilidad, dashboards, alertas, métricas y monitoreo centralizado.
 
 Servicios monitoreados:
 
@@ -305,6 +323,11 @@ Servicios monitoreados:
 - Nodes (Node Exporter) y pods
 - Métricas HTTP y personalizadas de la aplicación (prometheus-net)
 - Dashboard centralizado en Grafana
+- Logs centralizados con Datadog
+- Métricas CPU/Memoria/Network
+- Application Performance Monitoring (APM)
+- Kubernetes events
+- Container monitoring
 
 Despliegue y Configuración:
 
