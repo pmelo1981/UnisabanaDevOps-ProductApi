@@ -1,0 +1,112 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-productapi-dashboard
+  labels:
+    app: productapi
+    grafana_dashboard: "1"
+data:
+  productapi-dashboard.json: |-
+    {
+      "annotations": { "list": [] },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {
+          "title": "Application Up",
+          "type": "stat",
+          "gridPos": { "h": 8, "w": 6, "x": 0, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                { "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } }, "type": "value" }
+              ]
+            },
+            "overrides": []
+          },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "expr": "up{job=\"{{ .Release.Name }}-productapi\"}",
+              "legendFormat": "{{`{{pod}}`}}",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Error Rate (5xx) %",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 9, "x": 6, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "percent" }, "overrides": [] },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "expr": "sum(rate(microsoft_aspnetcore_hosting_http_server_request_duration_count{job=\"{{ .Release.Name }}-productapi\", http_response_status_code=~\"5..\"}[2m])) / sum(rate(microsoft_aspnetcore_hosting_http_server_request_duration_count{job=\"{{ .Release.Name }}-productapi\"}[2m])) * 100",
+              "legendFormat": "Error Rate",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "P95 Response Time (seconds)",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 9, "x": 15, "y": 0 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "expr": "histogram_quantile(0.95, sum(rate(microsoft_aspnetcore_hosting_http_server_request_duration_bucket{job=\"{{ .Release.Name }}-productapi\"}[3m])) by (le))",
+              "legendFormat": "P95",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Request Rate (req/s)",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "expr": "sum(rate(microsoft_aspnetcore_hosting_http_server_request_duration_count{job=\"{{ .Release.Name }}-productapi\"}[2m]))",
+              "legendFormat": "Total req/s",
+              "refId": "A"
+            }
+          ]
+        },
+        {
+          "title": "Memory Usage",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "prometheus" },
+              "expr": "container_memory_working_set_bytes{container=\"productapi\"}",
+              "legendFormat": "{{`{{pod}}`}}",
+              "refId": "A"
+            }
+          ]
+        }
+      ],
+      "refresh": "5s",
+      "schemaVersion": 39,
+      "tags": ["productapi"],
+      "templating": { "list": [] },
+      "time": { "from": "now-15m", "to": "now" },
+      "timepicker": {},
+      "timezone": "browser",
+      "title": "ProductAPI Dashboard",
+      "uid": "productapi-dashboard",
+      "version": 1
+    }

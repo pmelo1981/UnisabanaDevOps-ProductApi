@@ -31,3 +31,9 @@ env:
 ingress:
   enabled: true
   host: ""  # Dejar vacio para acceso directo por IP
+
+serviceMonitor:
+  enabled: true
+  interval: 15s
+  path: /metrics
+  release: prometheus

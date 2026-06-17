@@ -1,5 +1,6 @@
 using ProductAPI.Models;
 using ProductAPI.Repositories;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,9 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+// Registrar metricas HTTP de Prometheus
+app.UseHttpMetrics();
+
 app.UseHttpsRedirection();
 app.MapControllers();
 
@@ -23,5 +27,8 @@ app.MapControllers();
 app.MapGet("/api/products/health", () => 
     Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
 .WithName("HealthCheck");
+
+// Exponer endpoint /metrics de Prometheus
+app.MapMetrics();
 
 app.Run();

@@ -1,6 +1,7 @@
 using ProductAPI.Models;
 using ProductAPI.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Prometheus;
 
 namespace ProductAPI.Controllers;
 
@@ -9,10 +10,22 @@ namespace ProductAPI.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly ProductRepository _repository;
+    
+    private static readonly Gauge ProductsGauge = Metrics.CreateGauge(
+        "productapi_catalog_products_total", 
+        "Total number of active products in the in-memory catalog."
+    );
 
     public ProductsController(ProductRepository repository)
     {
         _repository = repository;
+        SyncProductCountMetric();
+    }
+
+    private void SyncProductCountMetric()
+    {
+        var products = _repository.GetAllAsync().GetAwaiter().GetResult();
+        ProductsGauge.Set(products.Count());
     }
 
     [HttpGet]
@@ -52,6 +65,7 @@ public class ProductsController : ControllerBase
     public async Task<ActionResult<Product>> Create(Product product)
     {
         var created = await _repository.AddAsync(product);
+        ProductsGauge.Inc();
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
@@ -70,6 +84,8 @@ public class ProductsController : ControllerBase
         var result = await _repository.DeleteAsync(id);
         if (!result)
             return NotFound(new { mensaje = $"Producto con id {id} no encontrado" });
+        
+        ProductsGauge.Dec();
         return NoContent();
     }
 }
