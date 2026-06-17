@@ -30,6 +30,7 @@ API REST para gestión de productos con despliegue automatizado en Kubernetes/AK
 - **Datadog** - Observabilidad cloud y monitoreo AKS
 - **Prometheus & Grafana** - Métricas, dashboards y alertas
 - **Snyk** - Escaneo de vulnerabilidades y DevSecOps
+- **k6** - Pruebas de estrés y carga sobre AKS
 
 ---
 
@@ -60,6 +61,7 @@ Microservicio simple en ASP.NET Core 10 que expone una API REST para gestionar p
 - Observabilidad centralizada con Datadog
 - Métricas y dashboards con Prometheus + Grafana
 - Escaneo de seguridad con Snyk
+- Pruebas de estrés distribuidas con k6
 - Despliega automáticamente en AKS vía ArgoCD
 
 ---
@@ -369,6 +371,62 @@ Escaneos ejecutados:
 
 - Snyk Open Source
 - Snyk Container
+
+---
+
+## Pruebas de Estrés con k6 en AKS
+
+El proyecto incluye pruebas de carga distribuidas usando `k6` ejecutándose directamente dentro del cluster AKS.
+
+Archivos incluidos:
+
+| Archivo | Descripción |
+|---|---|
+| `tests/stress-test.js` | Script k6 con ramp-up de usuarios virtuales y pruebas CRUD REST |
+| `tests/k6-job.yaml` | Kubernetes Job para ejecutar k6 dentro de AKS |
+| `tests/run-k6-aks.ps1` | Script PowerShell para automatizar la ejecución |
+
+Escenario de carga:
+
+- Ramp-up: 50 → 100 Virtual Users
+- Duración: ~5 minutos
+- Endpoints probados:
+  - `GET /api/products`
+  - `GET /api/products/stats`
+  - `POST /api/products`
+  - `GET /api/products/{id}`
+  - `DELETE /api/products/{id}`
+
+Prerequisitos:
+
+```powershell
+az login
+
+az aks get-credentials \
+  --resource-group productapi-rg-enterprise \
+  --name productapi-aks-mpn
+```
+
+Ejecución:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tests\run-k6-aks.ps1
+```
+
+Durante la ejecución se pueden visualizar métricas en:
+
+- Grafana
+- Datadog
+- Prometheus
+
+Métricas observables:
+
+- Request rate
+- Latencia
+- Error rate
+- CPU/Memoria
+- Escalamiento de pods
+- Throughput
 
 ---
 
