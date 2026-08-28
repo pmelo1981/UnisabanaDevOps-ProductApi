@@ -1,7 +1,7 @@
 replicaCount: 2
 image:
   repository: productapiacrproa7k2.azurecr.io/productapi
-  tag: migration
+  tag: 057485559966d72786568b9a7a73bcb13c60d8d7
   pullPolicy: Always
 service:
   type: ClusterIP
