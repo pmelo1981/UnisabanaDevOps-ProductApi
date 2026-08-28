@@ -454,5 +454,5 @@ Esto borra: AKS, ACR, Load Balancer, Storage, todo.
 ---
 
   
-**Ultima actualizacion:** 08/Junio/2026
+**Ultima actualizacion:** 28/Agosto/2026 - Migracion a nueva suscripcion de Azure (test pipeline CI/CD -> ArgoCD)
 
