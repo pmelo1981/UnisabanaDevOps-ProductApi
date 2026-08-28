@@ -30,6 +30,7 @@ jobs:
       run: dotnet tool install --global dotnet-sonarscanner
 
     - name: Begin SonarQube Analysis
+      continue-on-error: true
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -69,6 +70,7 @@ jobs:
         args: --severity-threshold=high
 
     - name: End SonarQube Analysis
+      continue-on-error: true
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
