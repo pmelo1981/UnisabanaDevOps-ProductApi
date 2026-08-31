@@ -12,13 +12,13 @@ resources:
     cpu: 500m
     memory: 512Mi
   requests:
-    cpu: 250m
+    cpu: 100m
     memory: 256Mi
 autoscaling:
   enabled: true
   minReplicas: 2
   maxReplicas: 5
-  targetCPUUtilizationPercentage: 80
+  targetCPUUtilizationPercentage: 30
 env:
   - name: ASPNETCORE_ENVIRONMENT
     value: Production
