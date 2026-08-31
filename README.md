@@ -12,7 +12,7 @@ Integrantes del grupo:
 
 API REST para gestión de productos con despliegue automatizado en Kubernetes/AKS, Helm, ArgoCD y CI/CD.
 
-**Acceso en vivo:** http://productapi-mpn.centralus.cloudapp.azure.com/api/products
+**Acceso en vivo:** http://productapi-pro.eastus.cloudapp.azure.com/api/products
 .
 ---
 
@@ -110,36 +110,36 @@ README.md                               # Este archivo
 
 **Base URL (PRODUCCIÓN - FQDN permanente):**
 ```
-http://productapi-mpn.centralus.cloudapp.azure.com
+http://productapi-pro.eastus.cloudapp.azure.com
 ```
 
 ### Ejemplos de uso
 
 **Health check:**
 ```bash
-curl http://productapi-mpn.centralus.cloudapp.azure.com/api/products/health
+curl http://productapi-pro.eastus.cloudapp.azure.com/api/products/health
 ```
 
 **Listar todos los productos:**
 ```bash
-curl http://productapi-mpn.centralus.cloudapp.azure.com/api/products
+curl http://productapi-pro.eastus.cloudapp.azure.com/api/products
 ```
 
 **Obtener estadísticas:**
 ```bash
-curl http://productapi-mpn.centralus.cloudapp.azure.com/api/products/stats
+curl http://productapi-pro.eastus.cloudapp.azure.com/api/products/stats
 ```
 
 **Crear producto:**
 ```bash
-curl -X POST http://productapi-mpn.centralus.cloudapp.azure.com/api/products \
+curl -X POST http://productapi-pro.eastus.cloudapp.azure.com/api/products \
   -H "Content-Type: application/json" \
   -d '{"name":"Laptop","description":"Gaming laptop","price":1299.99}'
 ```
 
 **Swagger UI (documentación interactiva):**
 ```
-http://productapi-mpn.centralus.cloudapp.azure.com/swagger
+http://productapi-pro.eastus.cloudapp.azure.com/swagger
 ```
 
 ---
@@ -256,7 +256,7 @@ Actualiza helm/values-acr.yaml con nueva imagen
     ↓
     Grafana muestra dashboards operacionales
     ↓
-    Disponible en: http://productapi-mpn.centralus.cloudapp.azure.com/api/...
+    Disponible en: http://productapi-pro.eastus.cloudapp.azure.com/api/...
 
 Infraestructura (ArgoCD, Helm, K8s config):  
 https://github.com/pmelo1981/UnisabanaDevOps-Infrastructure

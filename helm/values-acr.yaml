@@ -24,7 +24,7 @@ env:
     value: Production
 ingress:
   enabled: true
-  host: "productapi-mpn.centralus.cloudapp.azure.com"
+  host: "productapi-pro.eastus.cloudapp.azure.com"
 serviceMonitor:
   enabled: true
   interval: 15s
